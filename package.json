@@ -36,9 +36,10 @@
     "examples"
   ],
   "scripts": {
-    "build": "npm run clean && npm run build:core && npm run build:client",
+    "build": "npm run clean && npm run build:core && npm run build:client && npm run build:root",
     "build:core": "tsc -p tsconfig.core.json",
     "build:client": "tsc -p tsconfig.client.json",
+    "build:root": "tsc src/index.ts --outDir dist --declaration --target es2020 --module commonjs --moduleResolution node --esModuleInterop --allowSyntheticDefaultImports --skipLibCheck",
     "build:dev": "tsc -p tsconfig.dev.json",
     "build:prod": "tsc -p tsconfig.prod.json",
     "clean": "rimraf dist",
