@@ -266,7 +266,7 @@ This project is licensed under the [MIT License](./LICENSE).
 - 📖 [Documentation](./docs/)
 - 🐛 [Issue Tracker](https://github.com/yourusername/universal-mcp-server/issues)
 - 💬 [Discussions](https://github.com/yourusername/universal-mcp-server/discussions)
-- 📧 [Email Support](mailto:support@example.com)
+- 📧 [Email Support](mailto:pedroocalado@gmail.com)
 
 ## 🙏 Acknowledgments
 
