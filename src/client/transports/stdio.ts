@@ -19,7 +19,7 @@ export class StdioTransport extends BaseTransport {
     }
   >();
   private buffer = '';
-  private reconnectAttempts = 0;
+  // private reconnectAttempts = 0; // TODO: Implement reconnection logic
 
   constructor(config: StdioClientConfig) {
     super();
@@ -57,12 +57,12 @@ export class StdioTransport extends BaseTransport {
         this.process.kill('SIGTERM');
       }
 
-      this.process = undefined;
+      this.process = null;
     }
 
     this.setConnected(false);
     this.buffer = '';
-    this.reconnectAttempts = 0;
+    // this.reconnectAttempts = 0; // TODO: Implement reconnection logic
   }
 
   async send(request: MCPRequest): Promise<MCPResponse> {
@@ -96,13 +96,13 @@ export class StdioTransport extends BaseTransport {
       const options = {
         cwd: this.config.cwd,
         env: { ...process.env, ...this.config.env },
-        stdio: ['pipe', 'pipe', 'inherit'], // inherit stderr for debugging
+        stdio: ['pipe', 'pipe', 'inherit'] as ['pipe', 'pipe', 'inherit'], // inherit stderr for debugging
         shell: true,
       };
 
       this.process = spawn(this.config.command, this.config.args || [], options);
 
-      if (!this.process.stdin || !this.process.stdout) {
+      if (!this.process?.stdin || !this.process?.stdout) {
         reject(new Error('Failed to create stdio streams'));
         return;
       }

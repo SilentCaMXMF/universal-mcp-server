@@ -96,8 +96,8 @@ export class HttpTransport extends BaseTransport {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
 
-      const responseData: MCPResponse = await response.json();
-      return responseData;
+      const responseData = await response.json();
+      return responseData as MCPResponse;
     } catch (error) {
       clearTimeout(timeoutId);
 
@@ -217,12 +217,14 @@ export class HttpTransport extends BaseTransport {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
 
-      const responses: MCPResponse[] = await response.json();
+      const responses = (await response.json()) as MCPResponse[];
 
       // Validate all responses
       for (const response of responses) {
         this.validateResponse(response);
       }
+
+      return responses;
 
       return responses;
     } finally {

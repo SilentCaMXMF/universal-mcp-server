@@ -15,6 +15,7 @@ import { Logger } from '../utils/logger';
 import { MetricsCollector } from '../utils/metrics';
 import { PluginManager } from './plugin-manager';
 import { TransportManager } from './transport-manager';
+import { builtinTools } from './builtin-tools';
 
 /**
  * Generate a UUID v4
@@ -264,7 +265,6 @@ export class MCPServer extends EventTarget {
 
   private registerBuiltinTools(): void {
     // Import and register all built-in tools
-    const { builtinTools } = require('./builtin-tools');
     builtinTools.forEach((tool: MCPTool) => {
       this.registerTool(tool);
     });
