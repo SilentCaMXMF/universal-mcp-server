@@ -1,0 +1,156 @@
+# Source files
+src/
+tsconfig*.json
+*.tsbuildinfo
+
+# Test files
+tests/
+__tests__/
+**/*.test.ts
+**/*.test.js
+**/*.spec.ts
+**/*.spec.js
+
+# Development files
+.git/
+.github/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build outputs
+dist/
+build/
+lib/
+out/
+*.tsbuildinfo
+
+# Coverage reports
+coverage/
+.nyc_output/
+*.lcov
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# IDE and editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.atom/
+.brackets.json
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Temporary folders
+tmp/
+temp/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# parcel-bundler cache (https://parceljs.org/)
+.cache
+.parcel-cache
+
+# next.js build output
+.next
+
+# nuxt.js build output
+.nuxt
+
+# vuepress build output
+.vuepress/dist
+
+# Serverless directories
+.serverless
+
+# FuseBox cache
+.fusebox/
+
+# DynamoDB Local files
+.dynamodb/
+
+# TernJS port file
+.tern-port
+
+# Documentation source (if using TypeDoc)
+docs-source/
+
+# Development tools
+dev-tools/
+scripts/dev-*.js
+
+# Benchmark results
+benchmark-results/
+performance-results/
+
+# Security scan results
+security-report.json
+audit-report.json
+
+# Local development
+.local/
+dev/
+sandbox/
+
+# Storybook build outputs
+storybook-static
+
+# Dependency check files
+.dependency-cruiser.js
+
+# Configuration files that should not be published
+.eslintcache
+.stylelintcache
+
+# Tool-specific ignores
+.parcel-cache
+.vite
+.cache
+
+# Husky git hooks (included in git, but not needed in package)
+.husky/_/
+
+# Git metadata (except .gitignore which is needed)
+.git/

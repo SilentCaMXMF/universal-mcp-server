@@ -1,0 +1,141 @@
+name: Bug Report
+description: File a bug report to help us improve
+title: '[Bug]: '
+labels: ['bug', 'triage']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report! Please provide as much detail as possible.
+
+  - type: textarea
+    id: bug-description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of what the bug is
+      placeholder: |
+        When I try to [action], I expected [expected behavior] but instead got [actual behavior]
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction-steps
+    attributes:
+      label: Reproduction Steps
+      description: Steps to reproduce the behavior
+      placeholder: |
+        1. Install 'universal-mcp-server'
+        2. Create server with [configuration]
+        3. Call [method] with [parameters]
+        4. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: What you expected to happen
+      placeholder: |
+        I expected the server to [expected behavior] without errors
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: Actual Behavior
+      description: What actually happened
+      placeholder: |
+        Instead, I got this error: [error message or unexpected behavior]
+    validations:
+      required: true
+
+  - type: textarea
+    id: error-messages
+    attributes:
+      label: Error Messages / Logs
+      description: Copy and paste any relevant error messages or logs
+      render: shell
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: What version of universal-mcp-server are you using?
+      placeholder: e.g., 1.0.0
+    validations:
+      required: true
+
+  - type: dropdown
+    id: node-version
+    attributes:
+      label: Node.js Version
+      description: What version of Node.js are you using?
+      options:
+        - '18.x'
+        - '19.x'
+        - '20.x'
+        - '21.x'
+        - 'Other'
+    validations:
+      required: true
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      description: What operating system are you using?
+      options:
+        - Linux
+        - macOS
+        - Windows
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: transport
+    attributes:
+      label: Transport Protocol
+      description: Which transport protocol are you using?
+      options:
+        - WebSocket
+        - HTTP
+        - stdio
+        - Multiple
+    validations:
+      required: true
+
+  - type: textarea
+    id: code-example
+    attributes:
+      label: Code Example
+      description: Minimal code example that reproduces the issue
+      render: typescript
+      placeholder: |
+        import { MCPServer } from 'universal-mcp-server';
+
+        const server = new MCPServer({
+          // your configuration
+        });
+        // code that triggers the bug
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Any other context about the problem
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Confirmations
+      description: Please confirm the following
+      options:
+        - label: I have searched existing issues for similar problems
+          required: true
+        - label: I have provided enough information to reproduce the issue
+          required: true
+        - label: This is not a security vulnerability (use security policy for those)
+          required: true

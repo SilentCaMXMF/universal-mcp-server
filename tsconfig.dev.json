@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist/dev",
+    "rootDir": "./src",
+    "sourceMap": true,
+    "inlineSourceMap": true,
+    "noEmitOnError": false,
+    "incremental": true,
+    "tsBuildInfoFile": "./dist/dev/.tsbuildinfo"
+  },
+  "include": ["src/**/*"],
+  "exclude": ["tests", "examples"]
+}

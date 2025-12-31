@@ -1,0 +1,207 @@
+name: Performance Tests
+
+on:
+  schedule:
+    # Run performance tests daily at 4 AM UTC
+    - cron: '0 4 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'tests/performance/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'tests/performance/**'
+
+jobs:
+  performance-tests:
+    name: Performance Tests
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'performance')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build package
+        run: npm run build
+
+      - name: Run performance benchmarks
+        run: |
+          npm run test:performance
+
+          # Generate performance report
+          echo "=== Performance Test Results ===" > performance-report.txt
+          date >> performance-report.txt
+          echo "" >> performance-report.txt
+
+      - name: Benchmark WebSocket Performance
+        run: |
+          node -e "
+          const { performance } = require('perf_hooks');
+          const { MCPServer } = require('./dist/index.js');
+
+          async function benchmark() {
+            const start = performance.now();
+            const server = new MCPServer({
+              name: 'benchmark-server',
+              transports: { websocket: { port: 3002 } }
+            });
+            
+            await server.start();
+            const setupTime = performance.now() - start;
+            
+            // Simulate load
+            const loadStart = performance.now();
+            for (let i = 0; i < 1000; i++) {
+              // Simulate processing
+              await server.processMessage({ jsonrpc: '2.0', id: i, method: 'test', params: {} });
+            }
+            const loadTime = performance.now() - loadStart;
+            
+            await server.stop();
+            
+            console.log('Setup Time:', setupTime.toFixed(2), 'ms');
+            console.log('Load Time:', loadTime.toFixed(2), 'ms');
+            console.log('Requests/sec:', (1000 / (loadTime / 1000)).toFixed(2));
+          }
+
+          benchmark().catch(console.error);
+          " >> performance-report.txt
+
+      - name: Memory Usage Test
+        run: |
+          node -e "
+          const { performance } = require('perf_hooks');
+
+          function memoryTest() {
+            const initialMemory = process.memoryUsage();
+            console.log('Initial Memory:', {
+              rss: Math.round(initialMemory.rss / 1024 / 1024 * 100) / 100,
+              heapTotal: Math.round(initialMemory.heapTotal / 1024 / 1024 * 100) / 100,
+              heapUsed: Math.round(initialMemory.heapUsed / 1024 / 1024 * 100) / 100,
+              external: Math.round(initialMemory.external / 1024 / 1024 * 100) / 100
+            });
+            
+            // Simulate memory usage
+            const data = [];
+            for (let i = 0; i < 10000; i++) {
+              data.push({ id: i, data: 'x'.repeat(1000) });
+            }
+            
+            const afterAllocation = process.memoryUsage();
+            console.log('After Allocation:', {
+              rss: Math.round(afterAllocation.rss / 1024 / 1024 * 100) / 100,
+              heapTotal: Math.round(afterAllocation.heapTotal / 1024 / 1024 * 100) / 100,
+              heapUsed: Math.round(afterAllocation.heapUsed / 1024 / 1024 * 100) / 100,
+              external: Math.round(afterAllocation.external / 1024 / 1024 * 100) / 100
+            });
+            
+            // Clear reference
+            data.length = 0;
+            
+            if (global.gc) {
+              global.gc();
+            }
+            
+            const afterGC = process.memoryUsage();
+            console.log('After GC:', {
+              rss: Math.round(afterGC.rss / 1024 / 1024 * 100) / 100,
+              heapTotal: Math.round(afterGC.heapTotal / 1024 / 1024 * 100) / 100,
+              heapUsed: Math.round(afterGC.heapUsed / 1024 / 1024 * 100) / 100,
+              external: Math.round(afterGC.external / 1024 / 1024 * 100) / 100
+            });
+          }
+
+          memoryTest();
+          " >> performance-report.txt
+
+      - name: Upload performance report
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-report
+          path: performance-report.txt
+
+      - name: Comment PR with results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('performance-report.txt', 'utf8');
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '## 🚀 Performance Test Results\n\n```\n' + report + '\n```\n'
+            });
+
+  benchmarks:
+    name: Benchmark Comparison
+    runs-on: ubuntu-latest
+    needs: performance-tests
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout current code
+        uses: actions/checkout@v4
+        with:
+          path: current
+
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          path: main
+          ref: main
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: Benchmark current branch
+        run: |
+          cd current
+          npm ci
+          npm run build
+          npm run test:performance > ../current-benchmarks.txt
+
+      - name: Benchmark main branch
+        run: |
+          cd main
+          npm ci
+          npm run build
+          npm run test:performance > ../main-benchmarks.txt
+
+      - name: Compare benchmarks
+        run: |
+          echo "=== Benchmark Comparison ===" > benchmark-comparison.txt
+          echo "Current vs Main" >> benchmark-comparison.txt
+          echo "" >> benchmark-comparison.txt
+
+          echo "## Current Branch:" >> benchmark-comparison.txt
+          cat current-benchmarks.txt >> benchmark-comparison.txt
+          echo "" >> benchmark-comparison.txt
+
+          echo "## Main Branch:" >> benchmark-comparison.txt
+          cat main-benchmarks.txt >> benchmark-comparison.txt
+
+      - name: Upload benchmark comparison
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-comparison
+          path: benchmark-comparison.txt

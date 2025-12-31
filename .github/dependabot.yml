@@ -1,0 +1,68 @@
+version: 2
+updates:
+  # Check for npm package updates
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '09:00'
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: 'deps'
+      include: 'scope'
+    allow:
+      # Allow updates for production dependencies
+      - dependency-type: 'production'
+      - dependency-type: 'development'
+    ignore:
+      # Ignore certain packages that require manual updates
+      - dependency-name: 'typescript'
+        versions: ['5.x']
+      - dependency-name: '@types/node'
+        versions: ['20.x']
+    groups:
+      # Group related packages together
+      eslint-packages:
+        patterns:
+          - '@typescript-eslint/*'
+          - 'eslint*'
+        dependency-type: 'development'
+      testing-packages:
+        patterns:
+          - 'vitest*'
+          - '@vitest/*'
+        dependency-type: 'development'
+      docs-packages:
+        patterns:
+          - 'typedoc*'
+        dependency-type: 'development'
+
+  # Check for GitHub Actions updates
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '09:00'
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: 'ci'
+    groups:
+      # Group action updates
+      github-actions:
+        patterns:
+          - 'actions/*'
+          - 'github-script-action/*'
+        dependency-type: 'production'
+
+  # Optional: Docker updates (if using Docker)
+  - package-ecosystem: 'docker'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '09:00'
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: 'docker'
